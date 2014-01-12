@@ -1,0 +1,60 @@
+<html>
+<head>
+
+<title>TRAVEL THE GLOBE</title>
+
+<style type="text/css">
+body {
+    background-color: #ddddff;
+}
+.swfDiv {
+    width: 500;
+    height: 500;
+}
+
+.sidebar {
+    text-align: left;
+    background-color: white;"
+    padding: 5px 5px 5px 5px;
+    border-style: solid;
+    border-thickness: 1px;
+    border-color: #888888;
+}
+</style>
+</head>
+
+<script type="text/javascript" src="js/swfobject.js"></script>
+<script type="text/javascript" src="js/travel.js"></script>
+
+<body>
+<h1>TRAVEL THE GLOBE</h1>
+<table>
+<tbody>
+<tr>
+<td class="sidebar" valign="top" width="280">
+<p>
+This application demonstrates the ability of KAYAK GLOBE to integrate with
+any HTML page, using Javascript and DHTML (Ajax optional).  Through 
+Javascript, links and buttons on the page may be used to control the
+globe, and the contents of the page may be updated to reflect the
+state of the globe.
+</p>
+
+<p>
+To run this application, click the GO button below.  (The button is just
+a plain old HTML input control.)  The globe spins to a
+location chosen at random by the javascript on this page.  (The location
+could as easily be chosen by the server.)  Once the globe stops spinning,
+the location is displayed (again in plain old HTML) underneath the globe. 
+</p>
+
+<center>
+<br>
+<input type="submit" value="GO!" onclick="travel()">
+</center>
+</td>
+<td>
+<div id="swfDiv" class="swfDiv"></div>
+<p id="subtext"></p>
+</body>
+</html>

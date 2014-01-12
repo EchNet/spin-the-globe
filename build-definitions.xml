@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+  <property name="flex.dir" location="/home/ech/allurent/main/lib/flex/2.0"/>
+  <property name="flex.compc.jar" location="${flex.dir}/dist/lib/compc.jar"/>
+  <property name="flex.mxmlc.jar" location="${flex.dir}/dist/lib/mxmlc.jar"/>
+  <property name="flex.config" location="${flex.dir}/dist/frameworks/flex-config.xml"/>
+  <property name="flex.compc.options" value=""/>
+  <property name="flex.mxmlc.options" value=""/>
+
+    <!--
+    ++ =======================================================================
+    ++ Macro: compc
+    ++ Compile AS source into a SWC
+    ++ =======================================================================
+    -->
+    <macrodef name="compc">
+        <attribute name="src.dir" default="as3" />
+        <attribute name="options" default="${flex.compc.options}" />
+        <attribute name="config" default="${flex.config}" />
+        <attribute name="compc.config" default="${flex.compc.config}" />
+        <attribute name="dest.swc" />
+
+        <sequential>
+            <delete quiet="${quiet}" file="@{dest.swc}" />
+
+            <java jar="${flex.compc.jar}" dir="." fork="true" failonerror="true">
+                <jvmarg value="-Xmx512m" />
+                <arg line="@{options}" />
+                <arg value="-load-config=@{config}" />
+                <arg value="+flexlib=${flex.dir}/dist/frameworks" />
+                <arg value="-source-path=@{src.dir}" />
+                <arg value="-include-sources=@{src.dir}"/>
+                <arg value="-output=@{dest.swc}" />
+            </java>
+        </sequential>
+    </macrodef>
+
+    <!--
+    ++ =======================================================================
+    ++ Macro: mxmlc
+    ++ Compile Flex source into a SWF
+    ++ =======================================================================
+    -->
+    <macrodef name="mxmlc">
+
+        <attribute name="src" />
+        <attribute name="dest" />
+        <attribute name="options" default="${flex.compc.options}" />
+        <attribute name="config" default="${flex.config}" />
+        <attribute name="as.path" default="as3" />
+        <attribute name="lib.files" default="" />
+
+        <sequential>
+            <java jar="${flex.mxmlc.jar}" dir="." fork="true" failonerror="true">
+                <jvmarg value="-Xmx512m" />
+                <arg line="@{options}" />
+                <arg value="-load-config=@{config}" />
+                <arg value="+flexlib=${flex.dir}/dist/frameworks" />
+                <arg value="-source-path=@{as.path}" />
+                <arg value="-file-specs=@{src}" />
+                <arg value="-output=@{dest}" />
+            </java>
+        </sequential>
+    </macrodef>
+
+    <!--
+    ++ =======================================================================
+    ++ Macro: remove-generated-as
+    ++ Remove AS files generated from MXML files
+    ++ =======================================================================
+    -->
+    <macrodef name="remove-generated-as">
+        <attribute name="dir" default="as3" />
+        <sequential>
+            <delete quiet="${quiet}">
+                <fileset dir="@{dir}"
+                         includes="**/*-generated.as,**/*-report.dot,**/*-report.xml" />
+            </delete>
+        </sequential>
+    </macrodef>
+</project>

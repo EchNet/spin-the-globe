@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?> <mx:Application xmlns="*"
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="absolute"
+    creationComplete="onCreationComplete()"
+    styleName="plain"
+    backgroundColor="#ddddff"
+>
+    
+    <mx:Script><![CDATA[
+
+        import com.kayak.globe.GlobeView;
+        import flash.events.Event;
+
+        //
+        // TODO: download this image separately?
+        //
+        [Embed(source="../assets/mercator.jpg")]
+        private var _projectionImage:Class;
+
+        private var _globe:GlobeView;
+            
+        /**
+         * On creationComplete, hook up the globe view to the controller
+         * to the external event bridge.
+         */
+        private function onCreationComplete():void
+        {
+            _globe = new GlobeView(new _projectionImage() as Bitmap);
+            displayArea.addChild(_globe);
+
+            new ExternalTravelController(_globe, this);
+        }
+
+    ]]></mx:Script>
+    
+    <mx:UIComponent x="240" y="240" id="displayArea"/>
+
+</mx:Application>

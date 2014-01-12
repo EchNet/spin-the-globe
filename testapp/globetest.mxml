@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?> <mx:Application xmlns="*"
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="absolute"
+    creationComplete="onCreationComplete()"
+>
+    
+    <mx:Script><![CDATA[
+
+        import com.kayak.globe.GlobeController;
+        import com.kayak.globe.GlobeView;
+        import flash.events.Event;
+        import flash.events.TimerEvent;
+        import flash.utils.Timer;
+
+        [Embed(source="../assets/mercator.jpg")]
+        private var _projectionImage:Class;
+
+        private var _globe:GlobeView;
+        private var _controller:TestController;
+
+        [Bindable]
+        private var paused:Boolean = false;
+
+        private function onCreationComplete():void
+        {
+            reset();
+
+            var tim:Timer = new Timer(250);
+            tim.addEventListener(TimerEvent.TIMER, handleTimer);
+            tim.start();
+        }
+            
+        private function reset():void
+        {
+            if (_globe != null)
+            {
+                displayArea.removeChild(_globe);
+            }
+
+            _globe = new GlobeView(new _projectionImage() as Bitmap);
+            displayArea.addChild(_globe);
+
+            if (_controller != null)
+            {
+                _controller.destroy();
+            }
+
+            _controller = new TestController(_globe, this);
+
+            updateControls();
+        }
+
+        private function handleTimer(event:Event):void
+        {
+            updateControls();
+        }
+
+        private function updateControls():void
+        {
+            zoomer.value = _globe.cameraDistance * 100;
+            tilter.value = _globe.zRotation;
+            latituder.value = _globe.cameraLatitude;
+            longituder.text = "" + Math.floor(_globe.cameraLongitude);
+            speedControl.value = _controller.maxSpinVelocity;
+            accelerationControl.value = _controller.spinAcceleration;
+            decelerationControl.value = _controller.spinDeceleration;
+        }
+
+    ]]></mx:Script>
+
+    <mx:VBox x="20" y="20">
+        <mx:HBox>
+            <mx:Button label="Forward" click="_controller.startSpin(true)"/>
+            <mx:Button label="Backward" click="_controller.startSpin(false)"/>
+            <mx:Button label="Stop" click="_controller.stopSpin(true)"/>
+            <mx:Button label="{paused ? 'Resume' : 'Pause'}"
+                       click="_controller.paused = paused = !paused;
+                              updateControls()"/>
+        </mx:HBox>
+        
+        <mx:HBox>
+            <mx:Label text="Camera distance (km)" width="180"/>
+            <mx:HSlider id="zoomer" minimum="200" maximum="300000"
+                    liveDragging="true" change="_globe.cameraDistance = zoomer.value / 100;"/>
+            <mx:Label text="({Math.floor(zoomer.value)})"/>
+        </mx:HBox>
+        
+        <mx:HBox>
+            <mx:Label text="Tilt (degrees)" width="180"/>
+            <mx:HSlider id="tilter" minimum="-180" maximum="180"
+                    liveDragging="true"
+                    change="_globe.zRotation = tilter.value;"/>
+            <mx:Label text="({Math.floor(tilter.value)})"/>
+        </mx:HBox>
+        
+        <mx:HBox>
+            <mx:Label text="Latitude (degrees)" width="180"/>
+            <mx:HSlider id="latituder" minimum="-90" maximum="90"
+                    liveDragging="true"
+                    change="_globe.cameraLatitude = latituder.value;"/>
+            <mx:Label text="({Math.floor(latituder.value)})"/>
+        </mx:HBox>
+        
+        <mx:HBox>
+            <mx:Label text="Longitude (degrees):" width="180"/>
+            <mx:Text id="longituder" />
+        </mx:HBox>
+
+        <mx:HBox>
+            <mx:Label text="Speed (degrees/sec)" width="180"/>
+            <mx:HSlider id="speedControl" minimum="20" maximum="600"
+                    liveDragging="true"
+                    change="_controller.maxSpinVelocity = speedControl.value;"/>
+            <mx:Label text="({Math.floor(speedControl.value)})"/>
+        </mx:HBox>
+        
+        <mx:HBox>
+            <mx:Label text="Acceleration (degrees/sec/sec)" width="180"/>
+            <mx:HSlider id="accelerationControl" minimum="20" maximum="960"
+                    liveDragging="true"
+                    change="_controller.spinAcceleration = accelerationControl.value;"/>
+            <mx:Label text="({Math.floor(accelerationControl.value)})"/>
+        </mx:HBox>
+        
+        <mx:HBox>
+            <mx:Label text="Deceleration (degrees/sec/sec)" width="180"/>
+            <mx:HSlider id="decelerationControl" minimum="20" maximum="960"
+                    liveDragging="true"
+                    change="_controller.spinDeceleration = decelerationControl.value;"/>
+            <mx:Label text="({Math.floor(decelerationControl.value)})"/>
+        </mx:HBox>
+
+        <mx:Button label="Reset" click="reset()" />
+    </mx:VBox>
+    
+    <mx:UIComponent x="500" y="500" id="displayArea"/>
+
+</mx:Application>

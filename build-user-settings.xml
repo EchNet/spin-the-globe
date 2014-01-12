@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  Per user build settings -->
+
+<project>
+  <property name="flex.dir" location="/home/ech/allurent/main/lib/flex/2.0"/>
+  <property name="flex.mxmlc.options" value=""/>
+  <property name="flex.compc.options" value=""/>
+  <property name="build.root.dir" location="../../build"/>
+  <property name="deploy.root.dir" value="/tomcat5/webapps/ROOT"/>
+</project>

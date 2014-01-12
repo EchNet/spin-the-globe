@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+
+<project name="kayak" default="build">
+
+    <import file="build-user-settings.xml" />
+    <import file="build-definitions.xml" />
+
+    <property name="project.name" value="${ant.project.name}" />
+    <property name="build.dir" value="${build.root.dir}/${project.name}"/>
+    <property name="lib.dir" value="${build.dir}/lib"/>
+    <property name="aslib.swc" value="${lib.dir}/aslib.swc"/>
+    <property name="app.dir" value="${build.dir}/www"/>
+    <property name="test.swf" value="${app.dir}/globetest.swf"/>
+    <property name="travel.swf" value="${app.dir}/globetravel.swf"/>
+    <property name="deploy.dir" value="${deploy.root.dir}/${project.name}"/>
+
+    <target name="build" depends="lib,app,deploy"/>
+
+    <target name="lib" depends="initlib,aslib"/>
+
+    <target name="initlib">
+        <mkdir dir="${build.dir}/lib" />
+    </target>
+
+    <target name="aslib" depends="check-aslib" unless="uptodate-aslib">
+        <compc src.dir="aslib" dest.swc="${aslib.swc}" />
+    </target>
+
+    <target name="check-aslib">
+        <uptodate property="uptodate-aslib" targetfile="${aslib.swc}">
+            <srcfiles dir="aslib" includes="**/*.as" />
+        </uptodate>
+    </target>  
+
+    <target name="app" depends="initapp,testapp,travelapp" />
+
+    <target name="initapp">
+        <mkdir dir="${app.dir}" />
+    </target>
+
+    <target name="testapp" depends="check-testapp" unless="uptodate-testapp">
+        <mxmlc src="testapp/globetest.mxml"
+               dest="${test.swf}" 
+               options="-library-path+=${aslib.swc}"
+               as.path="testapp" />
+    </target>
+
+    <target name="check-testapp">
+        <uptodate property="uptodate-testapp" targetfile="${test.swf}">
+            <srcfiles dir="testapp" includes="**/*" />
+            <srcfiles dir="${lib.dir}" includes="**/*.swc" />
+        </uptodate>
+    </target>
+
+    <target name="travelapp" depends="check-travelapp" unless="uptodate-travelapp">
+        <mxmlc src="travelapp/travel.mxml"
+               dest="${travel.swf}" 
+               options="-library-path+=${aslib.swc}"
+               as.path="travelapp" />
+    </target>
+
+    <target name="check-travelapp">
+        <uptodate property="uptodate-travelapp" 
+                  targetfile="${travel.swf}">
+            <srcfiles dir="travelapp" includes="**/*" />
+            <srcfiles dir="${lib.dir}" includes="**/*.swc" />
+        </uptodate>
+    </target>
+
+    <target name="deploy">
+        <copy todir="${deploy.dir}">
+            <fileset dir="www">
+                <exclude name="**/.*.swp"/>
+            </fileset>
+            <fileset dir="${app.dir}"/>
+        </copy>
+    </target>
+
+    <target name="clean" description="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+  
+</project>
